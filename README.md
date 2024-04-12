@@ -1,5 +1,5 @@
 # Python-Blackjack
-A simple blackjack game written in python.
+Play blackjack on the console with python. 
 
 
 tested with python 3.11
