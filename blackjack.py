@@ -2,9 +2,17 @@ from random import shuffle
 
 # dealer stands on 17 or greater
 
+# when max_decks is set to 1, the shoe will be rebuilt each hand
+
+# might be a potential bug where the shoe is empty under certain conditions,
+# setting rebuild_size to 16 to try to avoid this
+
 deck_size = 52
-max_decks = 1
+# adjust max_decks to increase number of decks in shoe
+max_decks = 2
 total_deck_size = deck_size * max_decks
+# rebuild the shoe when the size is less than the rebuild_size
+rebuild_size = 16
 shoe = []
 
 cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
@@ -39,6 +47,11 @@ dealer = {
     "cards": [],
     "total": 0,
 }
+
+
+def greeting(decks):
+    print("Let's Play Blackjack !")
+    print(f"Decks in Shoe: {decks}")
 
 
 # takes the deck shoe, fills shoe with appropriate number of cards
@@ -135,7 +148,8 @@ def check_win(player, dealer):
 def action_menu():
   print("\nActions:")
   print("1: hit")
-  print("2: stand\n")
+  print("2: stand")
+  print("3: quit\n")
 
 
 def get_action():
@@ -143,8 +157,8 @@ def get_action():
 
   while True:
     try:
-      choice = int(input("hit or stand: "))
-      if choice == 1 or choice == 2:
+      choice = int(input("hit, stand or quit: "))
+      if choice == 1 or choice == 2 or choice == 3:
         break
       else:
         print("invalid action...")
@@ -154,41 +168,56 @@ def get_action():
   return choice
 
 
-# main game loop
+# big ugly function...
 def game():
+    greeting(max_decks)
     build_shoe(shoe)
     deal_start(shoe)
     update_hand_value(player, dealer)
 
-
-    if check_blackjack(player["cards"]) or check_blackjack(dealer["cards"]):
-      player["stand"] = True
-      print("BlackJack !")
-
-    show_cards(player, dealer)
-
-
-    while player["stand"] == False:
-      action_menu()
-      action = get_action()
-
-      if action == 1:
-        player["cards"].append(deal_card(shoe))
-        update_hand_value(player, dealer)
-        show_cards(player, dealer)
-        if player["total"] > 21:
-          player["stand"] = True
-      elif action == 2:
+    # main game loop
+    while True:
+      if check_blackjack(player["cards"]) or check_blackjack(dealer["cards"]):
         player["stand"] = True
+        print("BlackJack !")
 
+      show_cards(player, dealer)
 
-    while dealer["total"] < 17:
-      dealer["cards"].append(deal_card(shoe))
+      while player["stand"] == False:
+        action_menu()
+        action = get_action()
+
+        if action == 1:
+          player["cards"].append(deal_card(shoe))
+          update_hand_value(player, dealer)
+          show_cards(player, dealer)
+          if player["total"] > 21:
+            player["stand"] = True
+        elif action == 2:
+          player["stand"] = True
+        elif action == 3:
+          print("Thanks for Playing !")
+          return
+
+      while dealer["total"] < 17:
+        dealer["cards"].append(deal_card(shoe))
+        update_hand_value(player, dealer)
+
+      show_cards(player, dealer)
+      check_win(player, dealer)
+
+      # next hand setup
+      print("--------------------")
+      dealer["cards"].clear()
+      player["cards"].clear()
+      player["stand"] = False
+
+      if len(shoe) <= rebuild_size or max_decks == 1:
+        shoe.clear()
+        build_shoe(shoe)
+
+      deal_start(shoe)
       update_hand_value(player, dealer)
-
-    show_cards(player, dealer)
-
-    check_win(player, dealer)
 
 
 game()
