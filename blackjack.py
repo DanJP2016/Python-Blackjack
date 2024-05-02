@@ -8,17 +8,13 @@ from random import shuffle
 # setting rebuild_size to 16 to try to avoid this
 
 deck_size = 52
-# adjust max_decks to increase number of decks in shoe
-max_decks = 2
+max_decks = 1
 total_deck_size = deck_size * max_decks
-# rebuild the shoe when the size is less than the rebuild_size
 rebuild_size = 16
 shoe = []
 
 cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 
-# map the cards to values
-# ace can be 11 or 1
 values = {
     "2": 2,
     "3": 3,
@@ -54,7 +50,6 @@ def greeting(decks):
     print(f"Decks in Shoe: {decks}")
 
 
-# takes the deck shoe, fills shoe with appropriate number of cards
 def build_shoe(s):
     while len(s) < total_deck_size:
        for x in cards:
@@ -62,9 +57,6 @@ def build_shoe(s):
     shuffle(s)
 
 
-# to start game
-# deal 1 up card to player and 1 down card to dealer
-# deal second up card to player and up card to dealer
 def deal_start(deck):
     for x in range(1, 5):
         if x % 2 == 0:
